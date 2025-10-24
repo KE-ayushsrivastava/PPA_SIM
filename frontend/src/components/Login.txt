@@ -1,0 +1,126 @@
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Snackbar,
+  Alert,
+  Box,
+  Typography,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import "../assets/css/Login.css";
+import logo from "../assets/img/ke-full-logo.svg";
+
+const Login = () => {
+  // local state for inputs
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
+  const navigate = useNavigate();
+
+  // form submit handler
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // For now, dummy credentials check
+    if (email === "admin@test.com" && password === "123456") {
+      navigate("/main"); // ✅ navigate to Main screen
+    } else {
+      setError(true); // ❌ show popup error
+    }
+  };
+
+  return (
+    <Box className="loginPage">
+      <Box className="inFormBackground">
+        {/* background circles */}
+        <div className="circle"></div>
+        <div className="circle"></div>
+
+        {/* login card */}
+        <Box className="inLoginForm">
+          <form onSubmit={handleLogin}>
+            {/* logo */}
+            <div className="logoWrapper">
+              <img src={logo} alt="App Logo" className="logoImg" />
+            </div>
+
+            {/* title */}
+            <div className="title">
+              <Typography variant="h5" fontWeight={500}>
+                Welcome Back
+              </Typography>
+            </div>
+
+            {/* email input */}
+            <div className="inputGroup">
+              <label htmlFor="email">Email</label>
+              <TextField
+                id="email"
+                placeholder="Enter Email"
+                type="email"
+                fullWidth
+                variant="outlined"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                InputProps={{
+                  style: {
+                    color: "#fff",
+                    backgroundColor: "rgba(255,255,255,0.07)",
+                    borderRadius: "3px",
+                  },
+                }}
+              />
+            </div>
+
+            {/* password input */}
+            <div className="inputGroup">
+              <label htmlFor="password">Password</label>
+              <TextField
+                id="password"
+                placeholder="Enter Password"
+                type="password"
+                fullWidth
+                variant="outlined"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  style: {
+                    color: "#fff",
+                    backgroundColor: "rgba(255,255,255,0.07)",
+                    borderRadius: "3px",
+                  },
+                }}
+              />
+            </div>
+
+            {/* submit button */}
+            <Button type="submit" className="submitForm">
+              <span>Let me in</span>
+            </Button>
+          </form>
+        </Box>
+
+        {/* Error Snackbar */}
+        <Snackbar
+          open={error}
+          autoHideDuration={3000}
+          onClose={() => setError(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            severity="error"
+            variant="filled"
+            onClose={() => setError(false)}
+            sx={{ width: "100%" }}
+          >
+            Invalid credentials. Please try again!
+          </Alert>
+        </Snackbar>
+      </Box>
+    </Box>
+  );
+};
+
+export default Login;

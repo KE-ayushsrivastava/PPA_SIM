@@ -1,0 +1,61 @@
+from flask import Flask, jsonify, request
+from classes import RecordFetch, build_filter_cond, simulate_market_share, simulate_price_elasticity  # 👈 import function
+import pandas as pd
+from config import BrandPrice
+import time
+
+app = Flask(__name__)
+
+@app.route("/chart_data")
+def chart_data():
+    start_time1 = time.time()
+
+    prices_param = request.args.get("selectedPrices", "")
+    prices = [int(p) for p in prices_param.split(",") if p.strip().isdigit()] if prices_param else []
+
+    brand_param = request.args.get("selectedBrands", "")
+    selected_brands = [int(p) for p in brand_param.split(",") if p.strip().isdigit()] if brand_param else []
+
+    filters = {
+        "Age": request.args.get("Age", "").split(",") if request.args.get("Age") else [],
+        "Pregnant": request.args.get("Pregnant", "").split(",") if request.args.get("Pregnant") else [],
+        "Gender": request.args.get("Gender", "").split(",") if request.args.get("Gender") else [],
+        "CustomerSegment": request.args.get("CustomerSegment", "").split(",") if request.args.get("CustomerSegment") else [],
+        "Income": request.args.get("Income", "").split(",") if request.args.get("Income") else [],
+        "Children": request.args.get("Children", "").split(",") if request.args.get("Children") else [],
+    }
+
+    condX = build_filter_cond(filters)
+
+    calc = RecordFetch(condX)
+    raw_data = calc.calculate()
+    raw_data_df = pd.DataFrame(raw_data)
+    end_time1 = time.time()
+
+    start_time2 = time.time()
+    # ✅ Call simulate_market_share with raw_data
+    simulation_result = simulate_market_share(prices,raw_data_df,selected_brands,14,5,"MS")
+
+    elasticity_results = simulate_price_elasticity(prices, BrandPrice, raw_data_df,selected_brands,14,5)
+
+    end_time2 = time.time()
+
+    execution_time1 = round(end_time1 - start_time1, 3)
+    execution_time2 = round(end_time2 - start_time2, 3)
+    approx_time = execution_time2 - execution_time1
+
+    # Option 1: return only simulated result
+    # return jsonify(simulation_result)
+
+    # Option 2: return both raw + simulated
+    return jsonify({
+        "raw_data":raw_data,
+        "market_share": simulation_result,
+        "price_elasticity": elasticity_results,
+        "execution_time1": execution_time1,
+        "execution_time2": execution_time2,
+        "approx_time": approx_time
+    })
+
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -1,0 +1,146 @@
+from flask import Flask, request, jsonify
+import pandas as pd
+import numpy as np
+
+app = Flask(__name__)
+
+# Columns array (same as tumne diya tha)
+COLUMNS = ["respondent_id","Stokke_Xplory_Stroller_only","Stokke_Xplory_with_Carry_Cot",
+"Babyzen_Yoyo2_Stroller_only","Babyzen_Yoyo2_with_Carry_Cot","Cybex_Priam","Mima_Xari",
+"Joolz_Day","Bugaboo_Fox_3","Uppababy_Vista_V2","Joolz_Aer","Bugaboo_Butterfly","Nuna_TRVL",
+"Cybex_Eezy_S_2","Easywalker_Jackey","p1_1","p1_2","p1_3","p1_4","p1_5","p2_1","p2_2",
+"p2_3","p2_4","p2_5","p3_1","p3_2","p3_3","p3_4","p3_5","p4_1","p4_2","p4_3","p4_4",
+"p4_5","p5_1","p5_2","p5_3","p5_4","p5_5","p6_1","p6_2","p6_3","p6_4","p6_5","p7_1",
+"p7_2","p7_3","p7_4","p7_5","p8_1","p8_2","p8_3","p8_4","p8_5","p9_1","p9_2","p9_3",
+"p9_4","p9_5","p10_1","p10_2","p10_3","p10_4","p10_5","p11_1","p11_2","p11_3","p11_4",
+"p11_5","p12_1","p12_2","p12_3","p12_4","p12_5","p13_1","p13_2","p13_3","p13_4","p13_5",
+"p14_1","p14_2","p14_3","p14_4","p14_5","NONE","filter_weight"]
+
+price2 = [[859,969,1079,1189,1299],
+[1039,1169,1298,1429,1559],
+[359,399,449,489,539],
+[569,639,709,779,849],
+[839,939,1050,1149,1259],
+[959,1079,1199,1319,1439],
+[1039,1169,1299,1429,1559],
+[1019,1149,1279,1399,1529],
+[979,1099,1230,1349,1479],
+[359,399,449,489,539],
+[349,399,439,479,529],
+[319,359,400,439,479],
+[299,339,380,419,459],
+[279,319,350,389,419]]
+
+def simulate_market_share(selected_values, data_path="data.csv", n_products=14, n_price_points=5,type="MS"):
+    df = pd.read_csv(data_path, usecols=COLUMNS)
+    filter_weight = df["filter_weight"].astype(int).values
+    filter_weight_sum = filter_weight.sum()
+
+    dfX = df.drop(columns=["respondent_id", "filter_weight"])
+    data_arrX = np.array(dfX.values, dtype=float)
+
+    def create_product_coding_array(selected_values, n_products, n_price_points):
+        total_cols = n_products + (n_products * n_price_points) + 1
+        total_rows = n_products + 1
+        arr = [[0] * total_cols for _ in range(total_rows)]
+
+        for i, sel in enumerate(selected_values):
+            if sel == 0:
+                continue
+            arr[i][i] = 1
+            price_col_index = n_products + (n_price_points * i) + (sel - 1)
+            arr[i][price_col_index] = 1
+
+        arr[-1][-1] = 1  # NONE row
+        return np.array(arr)
+
+    
+    productCodingArray = create_product_coding_array(selected_values, n_products, n_price_points)
+    multiplyResult = np.exp(data_arrX @ productCodingArray.T)
+    sumResult = multiplyResult.T
+    sumResultArrSum = sumResult.sum(axis=0)
+
+    shareCalculationResult = sumResult / sumResultArrSum
+    transposeShareCalculationResult = shareCalculationResult.T
+
+    multiplycalculateArr = transposeShareCalculationResult * filter_weight[:, None]
+    frontpagesumResult = multiplycalculateArr.sum(axis=0)
+
+    if type == "MS":
+        finalResult = np.round((frontpagesumResult / filter_weight_sum) * 100,2)
+    else:
+        finalResult = (frontpagesumResult / filter_weight_sum)
+
+
+    return finalResult.tolist()
+
+
+def simulate_price_elasticity(selected_values, brandPrice2, data_path="data.csv", n_products=14, n_price_points=5):
+    results = {}
+
+    for prod_idx in range(n_products):
+        product_ms = []
+        for pp in range(1, n_price_points+1):
+            temp_selected = selected_values.copy()
+            temp_selected[prod_idx] = pp
+
+            # Call market share in raw mode
+            shares = simulate_market_share(
+                temp_selected,
+                data_path=data_path,
+                n_products=n_products,
+                n_price_points=n_price_points,
+                type="Elasticity"  # 👈 raw fractions
+            )
+            product_ms.append(shares[prod_idx])
+
+        # calculate elasticity for this product
+        pp_list = brandPrice2[prod_idx]
+        results[f"Product_{prod_idx+1}"] = calculate_arc_elasticity(product_ms, pp_list)
+
+    return results
+
+
+def calculate_arc_elasticity(ms_list, pp_list):
+    outputs = []
+    for i in range(len(ms_list)-1):  # MS1..MS4
+        if ms_list[i] == 0 or ms_list[i+1] == 0:
+            outputs.append(0)
+            continue
+        
+        ms_diff = ms_list[i] - ms_list[i+1]
+        ms_avg = (ms_list[i] + ms_list[i+1]) / 2
+        pp_diff = pp_list[i] - pp_list[i+1]
+        pp_avg = (pp_list[i] + pp_list[i+1]) / 2
+
+        if pp_diff == 0 or pp_avg == 0:
+            outputs.append(0)
+        else:
+            elasticity = (ms_diff/ms_avg) / (pp_diff/pp_avg)
+            outputs.append(round(elasticity, 4))
+    
+    return np.round(sum(outputs)/len(outputs),2) if outputs else 0
+
+        
+@app.route("/simulate", methods=["POST"])
+def simulate_api():
+    payload = request.get_json(force=True)
+    selected_values = payload.get("selected_values", [3]*14)
+    result = simulate_market_share(selected_values)
+    return jsonify({"finalResult": result})
+
+
+@app.route('/price-elasticity', methods=['POST'])
+def price_elasticity_api():
+    data = request.get_json()
+
+    selected_values = data.get("selected_values", [])
+    brandPrice2 = data.get("brandPrice2", [])
+
+    # Run full elasticity pipeline
+    elasticity_results = simulate_price_elasticity(selected_values, brandPrice2, data_path="data.csv")
+
+    return jsonify(elasticity_results)
+
+if __name__ == "__main__":
+    app.run(debug=True)

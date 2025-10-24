@@ -1,0 +1,159 @@
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+.loginPage {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #141225 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.inFormBackground {
+  margin: 0rem 2rem !important;
+}
+.inFormBackground,
+.inLoginForm {
+  width: 25rem !important;
+  height: 30rem !important;
+  max-width: 320px !important;
+  position: relative !important;
+}
+
+.inLoginForm form {
+  top: 50% !important;
+  left: 50% !important;
+  width: 20rem !important; /* 👈 wider form */
+  /* height removed 👇 */
+  max-width: 380px !important;
+  position: absolute !important;
+  padding: 20px 20px !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(6px) !important;
+  transform: translate(-50%, -50%) !important;
+  box-shadow: 0 0 40px rgba(8, 7, 16, 0.6) !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.13) !important;
+}
+
+/* Circles smaller + repositioned */
+.circle {
+  width: 10rem !important; /* 👈 reduced from 12rem */
+  height: 10rem !important;
+  position: absolute !important;
+  border-radius: 50% !important;
+}
+
+.circle:first-child {
+  left: -30% !important;
+  top: 0% !important;
+  /* background: linear-gradient(#ff0060, #c302b5) !important; */
+  background: linear-gradient(90deg, #1d3c80, #228ed9, #16c0e9);
+}
+
+.circle:nth-child(2) {
+  right: -30% !important;
+  bottom: 0% !important;
+  /* background: linear-gradient(164deg, #144e7cfc, #1877f2) !important; */
+  background: linear-gradient(90deg, #ff6a00, #ff8c3a, #f32c2b);
+}
+
+form * {
+  border: none !important;
+  outline: none !important;
+  color: #ffffff !important;
+  letter-spacing: 0.5px !important;
+  font-family: "Inter", sans-serif !important;
+}
+
+/* Logo wrapper */
+.logoWrapper {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Logo image */
+.logoImg {
+  width: 50% !important; /* 👈 adjust size */
+  height: 50% !important;
+}
+
+/* Title */
+.title {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
+  color: #ffffff !important;
+}
+
+/* Input labels */
+.inputGroup label {
+  display: block !important;
+  margin-top: 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+}
+
+/* Input fields (MUI TextField inside) */
+.inputGroup input {
+  width: 100% !important;
+  padding: 10px !important;
+  border-radius: 5px !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #ffffff !important;
+}
+
+/* Submit Button */
+.submitForm {
+  width: 100% !important;
+  margin-top: 25px !important;
+  padding: 12px 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+  background-color: #ffffff !important;
+  color: #141225 !important; /* 👈 default text black */
+  text-transform: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease-in-out !important;
+}
+
+.submitForm::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 6px !important;
+  /* background-color: #141225 !important; */
+  background: linear-gradient(90deg, #fa791d, #fc9b55, #469bd7, #55cae7);
+  transition: left 0.4s ease !important;
+  z-index: 0 !important; /* overlay stays behind text */
+}
+
+.submitForm span {
+  position: relative !important;
+  z-index: 1 !important; /* text always above overlay */
+  color: inherit !important; /* 👈 take from parent */
+}
+
+.submitForm:hover {
+  color: #000000 !important; /* 👈 only hover makes text white */
+}
+
+.submitForm:hover::before {
+  left: 0 !important;
+}
+
+/* Social login icons */

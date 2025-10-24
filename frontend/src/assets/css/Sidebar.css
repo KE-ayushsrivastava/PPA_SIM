@@ -1,0 +1,104 @@
+/* Sidebar Container */
+.sidebar-container {
+  flex-shrink: 0;
+}
+
+/* Drawer wrapper */
+.sidebar-drawer {
+  flex-shrink: 0;
+}
+
+.sidebar-paper {
+  box-sizing: border-box;
+  height: 100%;
+  overflow-x: hidden;
+  white-space: nowrap;
+  transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.sidebar-item {
+  border-radius: 8px !important; /* ✅ */
+  margin: 8px 16px !important; /* ✅ same as mx:1 & my:1 */
+  padding-top: 0 !important; /* ✅ py:0 */
+  padding-bottom: 0 !important; /* ✅ py:0 */
+  transition: all 0.3s ease !important;
+  padding-left: 3px !important;
+  padding-right: 7px !important;
+}
+.sidebar-item-icon {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-item-text {
+  transition: color 0.3s ease;
+}
+
+/* Logo section */
+.sidebar-logo-wrapper {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.sidebar-logo {
+  transition: all 0.3s ease-in-out;
+  max-height: 32px;
+}
+
+.sidebar-logo.open {
+  max-height: 40px;
+}
+
+/* Spacer */
+.sidebar-spacer {
+  flex-grow: 1;
+}
+
+/* Logout section */
+.sidebar-logout-wrapper {
+  margin-bottom: 16px;
+  border-top: 1px solid #ccc;
+}
+
+.sidebar-logout-btn {
+  margin: 8px;
+  padding: 0;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.sidebar-logout-btn:hover {
+  background-color: #fff;
+  color: #415fff;
+}
+
+.sidebar-logout-btn:hover .MuiListItemIcon-root,
+.sidebar-logout-btn:hover .MuiListItemText-root {
+  color: #415fff;
+}
+
+.sidebar-logout-icon {
+  min-width: 0;
+  justify-content: center;
+  color: #fff;
+  transition: margin-right 0.3s ease;
+}
+
+.sidebar-logout-icon.open {
+  margin-right: 8px;
+}
+
+.sidebar-logout-icon.collapsed {
+  margin-right: 0;
+}
+
+.sidebar-logout-text {
+  color: #fff;
+}
