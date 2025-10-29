@@ -9,10 +9,11 @@ from mysql.connector import pooling
 #     "database": "online_simulator"
 # }
 
+
 dbconfig = {
     "host": "localhost",
-    "user": "root",
-    "password": "pass@123",
+    "user": "kepython",
+    "password": "KePython@12345",
     "database": "online_simulator"
 }
 
