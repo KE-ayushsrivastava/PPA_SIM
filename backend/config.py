@@ -2,6 +2,13 @@ import mysql.connector
 from mysql.connector import pooling
 
 # Connection Pool Setup
+# dbconfig = {
+#     "host": "localhost",
+#     "user": "root",
+#     "password": "pass@123",
+#     "database": "online_simulator"
+# }
+
 dbconfig = {
     "host": "localhost",
     "user": "root",
