@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/chart_data": "http://127.0.0.1:5000",
-      "/api": "http://127.0.0.1:5000", // 👈 add this line
+      "/chart_data": "http://127.0.0.1:5001",
+      "/api": "http://127.0.0.1:5001", // 👈 add this line
     },
   },
 });
